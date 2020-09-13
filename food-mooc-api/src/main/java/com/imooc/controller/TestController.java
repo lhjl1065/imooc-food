@@ -1,18 +1,37 @@
 package com.imooc.controller;
 
-import com.imooc.service.TestService;
+import com.imooc.pojo.Stu;
+import com.imooc.service.impl.TestService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
 public class TestController {
     @Autowired
     private TestService testService;
-    @RequestMapping("/hello")
-    @ResponseBody
-    public String show(int id){
+
+    @GetMapping("/stu")
+    public Object show(int id){
         return testService.queryById(id);
+    }
+    @PostMapping("/stu")
+    public Object saveStu(@RequestBody Stu stu){
+        testService.saveStu(stu);
+        return "ok";
+    }
+    @DeleteMapping("/stu")
+    public Object deleteStuById(int id){
+        testService.deleteStuById(id);
+        return "ok";
+    }
+    @PutMapping("/stu")
+    public Object updateStu(@RequestBody Stu stu){
+        testService.updateStu(stu);
+        return "ok";
     }
 }
