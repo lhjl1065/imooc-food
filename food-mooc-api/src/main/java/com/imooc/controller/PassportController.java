@@ -1,13 +1,18 @@
 package com.imooc.controller;
 
 
+import com.imooc.common.utils.CookieUtils;
 import com.imooc.common.utils.IMOOCJSONResult;
+import com.imooc.common.utils.JsonUtils;
 import com.imooc.pojo.Users;
 import com.imooc.pojo.bo.UserBo;
 import com.imooc.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiOperation;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -74,7 +79,7 @@ public class PassportController {
      */
     @ApiOperation(value = "用户登录",notes = "用户登录的接口",httpMethod = "POST")
     @PostMapping("/login")
-    public Object login(@RequestBody UserBo userBo) {
+    public Object login(@RequestBody UserBo userBo, HttpServletRequest request, HttpServletResponse response) {
         String username = userBo.getUsername();
         String password = userBo.getPassword();
         if (StringUtils.isBlank(username)||StringUtils.isBlank(password)){
@@ -84,7 +89,20 @@ public class PassportController {
         if (userResult==null){
             return IMOOCJSONResult.errorMsg("用户名或密码不正确");
         }
+        //把user中的隐私信息值设为空
+        setNull(userResult);
+        //把user放到response中返回
+        CookieUtils.setCookie(request,response,"user", JsonUtils.objectToJson(userResult),true);
         return IMOOCJSONResult.ok(userResult);
 
+    }
+    private void setNull(Users userResult){
+        userResult.setPassword(null);
+        userResult.setCreatedTime(null);
+        userResult.setUpdatedTime(null);
+        userResult.setEmail(null);
+        userResult.setMobile(null);
+        userResult.setBirthday(null);
+        userResult.setFace(null);
     }
 }

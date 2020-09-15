@@ -2,6 +2,9 @@ package com.imooc.controller;
 
 import com.imooc.pojo.Stu;
 import com.imooc.service.impl.TestService;
+import org.n3r.idworker.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,11 +17,13 @@ import springfox.documentation.annotations.ApiIgnore;
 @ApiIgnore
 @RestController
 public class TestController {
+    private static final Logger logger=LoggerFactory.getLogger(TestController.class);
     @Autowired
     private TestService testService;
 
     @GetMapping("/stu")
     public Object show(int id){
+        logger.info("进入/stu方法是执行");
         return testService.queryById(id);
     }
     @PostMapping("/stu")
