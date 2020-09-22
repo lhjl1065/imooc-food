@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.imooc.mapper.CategoryMapperCustom" >
+  <resultMap id="SubCategoryVo" type="com.imooc.pojo.vo.CategoryVo">
+    <result column="id" property="id"></result>
+    <result column="name" property="name"></result>
+    <result column="type" property="type"></result>
+    <result column="fatherId" property="fatherId"></result>
+    <collection property="subCatList" ofType="com.imooc.pojo.vo.SubCategoryVo">
+      <result column="subId" property="subId"></result>
+      <result column="subName" property="subName"></result>
+      <result column="subType" property="subType"></result>
+      <result column="subFatherId" property="subFatherId"></result>
+    </collection>
+  </resultMap>
+  <select id="getSubCatList" resultMap="SubCategoryVo">
+    SELECT
+     f.id AS id,
+     f.name AS name,
+     f.type AS type,
+     f.father_id AS fatherId,
+     s.id AS subId,
+     s.name AS subName,
+     s.type AS subType,
+     s.father_id AS subFatherId
+   FROM
+     category f
+   INNER JOIN
+     category s
+   ON
+     f.`id`=s.`father_id`
+   WHERE
+     f.father_id=#{rootCatId}
+  </select>
+
+  <resultMap id="myNewItemsWithRootCatIdVo" type="com.imooc.pojo.vo.NewItemsWithRootCatIdVo">
+    <result property="rootCatId" column="rootCatId"></result>
+    <result property="rootCatName" column="catName"></result>
+    <result property="slogan" column="slogan"></result>
+    <result property="catImage" column="catImage"></result>
+    <result property="bgColor" column="bg_color"></result>
+    <collection property="simpleItemList" ofType="com.imooc.pojo.vo.SimpleItemVO">
+      <result property="itemId" column="itemId"></result>
+      <result property="itemName" column="itemName"></result>
+      <result property="itemUrl" column="itemUrl"></result>
+    </collection>
+  </resultMap>
+  <select id="getSixNewItemsLazy" resultMap="myNewItemsWithRootCatIdVo">
+    SELECT
+      c.`id` AS rootCatId,
+      c.`bg_color` AS bg_color,
+      c.`slogan` AS slogan,
+      c.`cat_image` AS catImage,
+      c.`name` AS catName,
+      i.`item_name` AS itemName,
+      i.`id` AS ItemId,
+      i.`created_time` AS createTime,
+      ii.`url` AS itemUrl
+    FROM
+      category c
+    INNER JOIN
+      items i
+    ON
+      c.`id`=i.`root_cat_id`
+    INNER JOIN
+      items_img ii
+    ON
+      i.`id`=ii.`item_id`
+    WHERE
+      c.`id`=#{rootCatId}
+    AND
+      ii.is_main=1
+    ORDER BY
+      i.`created_time` DESC
+    LIMIT 0,6
+
+  </select>
+
+
+</mapper>

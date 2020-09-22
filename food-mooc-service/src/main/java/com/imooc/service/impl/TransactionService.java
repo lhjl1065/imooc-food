@@ -14,11 +14,6 @@ public class TransactionService {
     public void testTransaction(){
         System.out.println("testTransaction执行了");
         testService.saveParent();
-        try {
-            testService.saveChildren();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        int i=1/0;
+        testService.saveChildren();
     }
 }

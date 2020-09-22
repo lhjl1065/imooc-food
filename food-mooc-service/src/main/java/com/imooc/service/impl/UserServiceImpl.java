@@ -27,6 +27,11 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(propagation = Propagation.SUPPORTS)
     public boolean queryUsernameIsExist(String name){
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         Example example = new Example(Users.class);
         Criteria criteria = example.createCriteria();
         criteria.andEqualTo("username",name);
@@ -73,5 +78,6 @@ public class UserServiceImpl implements UserService {
         Users userResult = usersMapper.selectOneByExample(example);
         return userResult;
     }
+
 
 }

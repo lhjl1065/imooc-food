@@ -4,8 +4,8 @@ public enum SexEnum {
     man(0,"男"),
     woman(1,"女"),
     secret(2,"保密");
-    private int type_;
-    private String value;
+    private final int type_;
+    private final String value;
 
     public int getType_() {
         return type_;

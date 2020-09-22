@@ -22,7 +22,8 @@ spring:
 mybatis:
   type-aliases-package: com.lhjl.pojo  # 指定pojo类所在包路径
   mapper-locations: classpath:mapper/*.xml # 指定mapper映射文件
-mapper:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   mappers: com.imooc.my.mapper.MyMapper
   not-empty: false
   identity: MYSQL

@@ -40,10 +40,15 @@ public class TestService {
         stuMapper.insert(parent);
     }
 
-    @Transactional(propagation = Propagation.NESTED)
+    @Transactional(propagation = Propagation.SUPPORTS)
     public void saveChildren(){
-        saveChildren1();
-        saveChildren2();
+        try {
+            saveChildren1();
+            int i=1/0;
+            saveChildren2();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void saveChildren1(){

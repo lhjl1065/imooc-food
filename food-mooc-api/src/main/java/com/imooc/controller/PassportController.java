@@ -96,6 +96,13 @@ public class PassportController {
         return IMOOCJSONResult.ok(userResult);
 
     }
+    @ApiOperation(value = "用户退出",notes = "用户退出",httpMethod = "POST")
+    @PostMapping("/logout")
+    public Object logout(@RequestParam String userId,HttpServletRequest request,HttpServletResponse response){
+        //删除登录相关的cookie
+        CookieUtils.deleteCookie(request,response,"user");
+        return IMOOCJSONResult.ok();
+    }
     private void setNull(Users userResult){
         userResult.setPassword(null);
         userResult.setCreatedTime(null);
@@ -103,6 +110,5 @@ public class PassportController {
         userResult.setEmail(null);
         userResult.setMobile(null);
         userResult.setBirthday(null);
-        userResult.setFace(null);
     }
 }
