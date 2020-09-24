@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.imooc.mapper.ItemsMapperCustom" >
+
+  <resultMap id="SearchItemVo" type="com.imooc.pojo.vo.SearchItemVo">
+    <result column="itemId" property="itemId"></result>
+    <result column="itemName" property="itemName"></result>
+    <result column="sellCounts" property="sellCounts"></result>
+    <result column="imgUrl" property="imgUrl"></result>
+    <result column="price" property="price"></result>
+  </resultMap>
+
+  <select id="getSearchItemList" resultMap="SearchItemVo">
+    SELECT
+    i.`id` AS itemId,
+    i.`item_name` AS itemName,
+    i.`sell_counts` AS sellCounts,
+    ii.`url` AS imgUrl,
+    temp.price AS price
+    FROM
+    items i
+    INNER JOIN
+    items_img ii
+    ON
+    i.`id`=ii.`item_id`
+    INNER JOIN
+    (SELECT
+    item_id AS itemId,
+    MIN(i.price_discount) AS price
+    FROM
+    items_spec i
+    GROUP BY
+    item_id) temp
+    ON
+    i.`id`=temp.itemId
+    WHERE
+    ii.`is_main`=1
+    <if test="map.keyword!=null and map.keyword!=''" >
+      AND
+      i.`item_name` LIKE '%${map.keyword}%'
+    </if>
+    <if test="map.catId!=null">
+      AND
+      i.`cat_id` = #{map.catId}
+    </if>
+    order BY
+    <choose>
+      <when test="map.sort==&quot;c&quot;">
+        sellCounts DESC
+      </when>
+      <when test="map.sort==&quot;p&quot;">
+        price ASC
+      </when>
+      <otherwise>
+        itemName asc
+      </otherwise>
+    </choose>
+  </select>
+
+</mapper>

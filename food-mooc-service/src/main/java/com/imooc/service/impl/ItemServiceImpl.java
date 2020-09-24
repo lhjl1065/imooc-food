@@ -1,12 +1,15 @@
 package com.imooc.service.impl;
 
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.imooc.common.enums.CommentLevelenum;
+import com.imooc.common.utils.DesensitizationUtil;
 import com.imooc.mapper.ItemsCommentsMapper;
 import com.imooc.mapper.ItemsCommentsMapperCustom;
 import com.imooc.mapper.ItemsImgMapper;
 import com.imooc.mapper.ItemsMapper;
+import com.imooc.mapper.ItemsMapperCustom;
 import com.imooc.mapper.ItemsParamMapper;
 import com.imooc.mapper.ItemsSpecMapper;
 import com.imooc.pojo.Items;
@@ -17,6 +20,7 @@ import com.imooc.pojo.ItemsSpec;
 import com.imooc.pojo.PagedGridResult;
 import com.imooc.pojo.vo.CommentCountsVo;
 import com.imooc.pojo.vo.CommentVo;
+import com.imooc.pojo.vo.SearchItemVo;
 import com.imooc.service.ItemService;
 import java.util.HashMap;
 import java.util.List;
@@ -42,6 +46,8 @@ public class ItemServiceImpl implements ItemService {
     private ItemsCommentsMapper itemsCommentsMapper;
     @Autowired
     private ItemsCommentsMapperCustom itemsCommentsMapperCustom;
+    @Autowired
+    private ItemsMapperCustom itemsMapperCustom;
     @Transactional(propagation = Propagation.SUPPORTS)
     public Items getItems(String itemId) {
         return itemsMapper.selectByPrimaryKey(itemId);
@@ -99,12 +105,15 @@ public class ItemServiceImpl implements ItemService {
         map.put("commentLevel",level);
         PageHelper.startPage(page,pageSize);
         List<CommentVo> list = itemsCommentsMapperCustom.getItemCommentVoList(map);
+        for (CommentVo commentVo:list){
+            commentVo.setNickName(DesensitizationUtil.commonDisplay(commentVo.getNickName()));
+        }
         return setterPagedGridResult(list,page);
 
     }
     @Transactional(propagation =Propagation.SUPPORTS)
-    public PagedGridResult setterPagedGridResult(List<?> list,Integer page){
-        PageInfo<?> pageList = new PageInfo<>(list);
+    PagedGridResult setterPagedGridResult(List<?> list,Integer page){
+        PageInfo pageList = new PageInfo(list);
         PagedGridResult pagedGridResult = new PagedGridResult();
         pagedGridResult.setPage(page);
         pagedGridResult.setRows(list);
@@ -112,5 +121,23 @@ public class ItemServiceImpl implements ItemService {
         pagedGridResult.setRecords(pageList.getTotal());
         return pagedGridResult;
 
+    }
+    @Transactional(propagation = Propagation.SUPPORTS)
+    public PagedGridResult getSearchItemVoListByKeywords(String keyword,String sort,Integer page,Integer pageSize){
+        HashMap<String, Object> map = new HashMap<String, Object>();
+        map.put("keyword",keyword);
+        map.put("sort",sort);
+        PageHelper.startPage(page,pageSize);
+        List<SearchItemVo> list = itemsMapperCustom.getSearchItemList(map);
+        return setterPagedGridResult(list,page);
+    }
+    @Transactional(propagation = Propagation.SUPPORTS)
+    public PagedGridResult getSearchItemVoListByCatId(Integer CatId,String sort,Integer page,Integer pageSize){
+        HashMap<String, Object> map = new HashMap<String, Object>();
+        map.put("catId",CatId);
+        map.put("sort",sort);
+        PageHelper.startPage(page,pageSize);
+        List<SearchItemVo> list = itemsMapperCustom.getSearchItemList(map);
+        return setterPagedGridResult(list,page);
     }
 }

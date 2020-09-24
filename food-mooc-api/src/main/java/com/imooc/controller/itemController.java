@@ -10,6 +10,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -44,11 +45,57 @@ public class itemController {
     @ApiOperation(value = "查询评价列表的接口",notes = "查询评价列表的接口",httpMethod = "GET")
     @GetMapping("/comments")
     public Object comments (
-        @RequestParam @ApiParam(value = "商品id") String itemId,
-        @RequestParam @ApiParam(value = "评价等级") Integer level,
+        @RequestParam @ApiParam(value = "商品id",required = true) String itemId,
+        @RequestParam @ApiParam(value = "评价等级",required = true) Integer level,
         @RequestParam @ApiParam(value = "当前页") Integer page,
         @RequestParam @ApiParam(value = "每页显示数") Integer pageSize){
+        if (page==null){
+            page=1;
+        }
+        if (pageSize==null){
+            pageSize=10;
+        }
         PagedGridResult commentVoList = itemService.getCommentVoList(itemId, level, page, pageSize);
         return IMOOCJSONResult.ok(commentVoList);
+    }
+
+    @ApiOperation(value = "关键词搜索商品的接口",notes = "关键词搜索商品的接口",httpMethod = "GET")
+    @GetMapping("/search")
+    public Object comments (
+        @RequestParam @ApiParam(value = "关键词",required = true) String keywords,
+        @RequestParam @ApiParam(value = "排序方式") String sort,
+        @RequestParam @ApiParam(value = "当前页") Integer page,
+        @RequestParam @ApiParam(value = "每页显示数") Integer pageSize){
+        if (page==null){
+            page=1;
+        }
+        if (pageSize==null){
+            pageSize=10;
+        }
+        if (StringUtils.isBlank(keywords)){
+            return IMOOCJSONResult.errorMsg("无关键字");
+        }
+        PagedGridResult searchItemList = itemService.getSearchItemVoListByKeywords(keywords,sort, page, pageSize);
+        return IMOOCJSONResult.ok(searchItemList);
+    }
+
+    @ApiOperation(value = "分类Id搜索商品的接口",notes = "分类ID搜索商品的接口",httpMethod = "GET")
+    @GetMapping("/catItems")
+    public Object catItems (
+        @RequestParam @ApiParam(value = "分类ID",required = true) Integer catId,
+        @RequestParam @ApiParam(value = "排序方式") String sort,
+        @RequestParam @ApiParam(value = "当前页") Integer page,
+        @RequestParam @ApiParam(value = "每页显示数") Integer pageSize){
+        if (page==null){
+            page=1;
+        }
+        if (pageSize==null){
+            pageSize=10;
+        }
+        if ((catId==null)){
+            return IMOOCJSONResult.errorMsg("无分类id");
+        }
+        PagedGridResult searchItemList = itemService.getSearchItemVoListByCatId(catId,sort, page, pageSize);
+        return IMOOCJSONResult.ok(searchItemList);
     }
 }

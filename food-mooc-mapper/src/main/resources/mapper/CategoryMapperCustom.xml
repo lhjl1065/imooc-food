@@ -73,7 +73,6 @@
     ORDER BY
       i.`created_time` DESC
     LIMIT 0,6
-
   </select>
 
 

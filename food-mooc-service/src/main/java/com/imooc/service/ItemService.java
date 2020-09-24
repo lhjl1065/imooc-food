@@ -17,4 +17,6 @@ public interface ItemService {
     List<ItemsSpec> getItemSpecList(String itemId);
     CommentCountsVo getCommentCounts(String itemId);
     PagedGridResult getCommentVoList(String itemId,Integer level,Integer page,Integer pageSize);
+    PagedGridResult getSearchItemVoListByKeywords(String keywords,String sort,Integer page,Integer pageSize);
+    PagedGridResult getSearchItemVoListByCatId(Integer catId,String sort,Integer page,Integer pageSize);
 }
