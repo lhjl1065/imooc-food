@@ -56,5 +56,30 @@
       </otherwise>
     </choose>
   </select>
+  <select id="getShopCartVoList" resultType="com.imooc.pojo.vo.ShopCartVo">
+    SELECT
+        ise.`item_id` AS itemId,
+        im.`url` AS itemImgUrl,
+        it.`item_name` AS itemName,
+        ise.`id` AS specId,
+        ise.`name` AS specName,
+        ise.`price_discount` AS priceDiscount,
+        ise.`price_normal` AS priceNormal
+    FROM
+        items_spec ise
+    INNER JOIN
+        items_img im
+    ON
+        ise.`item_id`= im.`item_id`
+    INNER JOIN
+        items it
+    ON
+        ise.`item_id`=it.`id`
+    WHERE
+        im.`is_main`=1 AND ise.`id` IN
+         <foreach collection="itemSpecIdList" item="id" open="(" close=")" separator=",">
+           #{id}
+         </foreach>
+  </select>
 
 </mapper>
