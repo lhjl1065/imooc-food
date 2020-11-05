@@ -39,6 +39,7 @@ public class AddressController {
             return IMOOCJSONResult.errorMsg(checkAddress(userAddress));
         }
         addressService.add(userAddress);
+        System.out.println("这是我提交的代码");
         return IMOOCJSONResult.ok();
     }
 
