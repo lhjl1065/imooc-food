@@ -19,6 +19,7 @@
     <module>food-mooc-mapper</module>
     <module>food-mooc-service</module>
     <module>food-mooc-api</module>
+    <module>food-mooc-manager</module>
   </modules>
   <properties>
     <java.version>1.8</java.version>

@@ -1,5 +1,6 @@
 package com.imooc.controller;
 
+import com.imooc.mapper.StuMapper;
 import com.imooc.pojo.Stu;
 import com.imooc.service.impl.TestService;
 import org.n3r.idworker.Test;
@@ -13,13 +14,16 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
+import tk.mybatis.mapper.entity.Example;
+import tk.mybatis.mapper.entity.Example.Criteria;
 
-@ApiIgnore
 @RestController
 public class TestController {
     private static final Logger logger=LoggerFactory.getLogger(TestController.class);
     @Autowired
     private TestService testService;
+    @Autowired
+    private StuMapper stuMapper;
 
     @GetMapping("/stu")
     public Object show(int id){

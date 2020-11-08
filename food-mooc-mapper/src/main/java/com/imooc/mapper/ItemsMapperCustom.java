@@ -9,4 +9,5 @@ import org.apache.ibatis.annotations.Param;
 public interface ItemsMapperCustom {
     List<SearchItemVo> getSearchItemList(@Param("map") HashMap map);
     List<ShopCartVo> getShopCartVoList(@Param("itemSpecIdList") List itemSpecIds);
+    Integer decreaseStock(@Param(("itemSpecId")) String itemSpecId,@Param("buyCounts") Integer buyCounts);
 }

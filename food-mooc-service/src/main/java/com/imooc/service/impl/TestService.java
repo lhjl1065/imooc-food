@@ -28,8 +28,9 @@ public class TestService {
 
     @Transactional(propagation = Propagation.REQUIRED)
     public void updateStu(Stu stu) {
-        saveChildren1();
-        saveChildren2();
+        Stu stu1 = stuMapper.selectByPrimaryKey(1);
+        stuMapper.updateAge(1);
+        System.out.println(Thread.currentThread().getName());
     }
 
     /*

@@ -140,4 +140,5 @@ public class ItemServiceImpl implements ItemService {
         List<SearchItemVo> list = itemsMapperCustom.getSearchItemList(map);
         return setterPagedGridResult(list,page);
     }
+
 }

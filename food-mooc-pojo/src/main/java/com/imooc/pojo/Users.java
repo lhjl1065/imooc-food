@@ -2,6 +2,7 @@ package com.imooc.pojo;
 
 import java.util.Date;
 import javax.persistence.*;
+import lombok.experimental.Accessors;
 
 public class Users {
     /**

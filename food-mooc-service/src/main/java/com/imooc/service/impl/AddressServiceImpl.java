@@ -1,20 +1,17 @@
 package com.imooc.service.impl;
 
+import com.imooc.common.enums.YesOrNo;
 import com.imooc.mapper.UserAddressMapper;
 import com.imooc.pojo.UserAddress;
 import com.imooc.service.AddressService;
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils.Collections;
 import java.util.Date;
 import java.util.List;
-import org.apache.catalina.User;
-import org.apache.commons.lang3.StringUtils;
 import org.n3r.idworker.Sid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Service
 public class AddressServiceImpl implements AddressService {
@@ -36,10 +33,11 @@ public class AddressServiceImpl implements AddressService {
         //设置创建时间和修改时间
         userAddress.setCreatedTime(new Date());
         userAddress.setUpdatedTime(new Date());
-        //查询是否是该用户的第一个收货地址,如果是则把默认地址字段设为 1
+        //查询是否是该用户的第一个收货地址,如果是则把默认地址字段设为 1,不是则设为0
+        userAddress.setIsDefault(YesOrNo.NO.getType());
         List<UserAddress> list = list(userAddress.getUserId());
         if (CollectionUtils.isEmpty(list)){
-            userAddress.setIsDefault(1);
+            userAddress.setIsDefault(YesOrNo.YES.getType());
         }
         //存储收货地址
         userAddressMapper.insert(userAddress);
@@ -72,6 +70,7 @@ public class AddressServiceImpl implements AddressService {
      * 物理删除收货地址
      * @param addressId
      */
+    @Transactional(propagation = Propagation.REQUIRED)
     public void delete(String addressId,String userId) {
         //如果是默认收货地址,那么如果还剩得有收货地址,则设置剩下的其中一个收货地址为默认
         UserAddress userAddress = userAddressMapper.selectByPrimaryKey(addressId);
@@ -82,13 +81,36 @@ public class AddressServiceImpl implements AddressService {
             List<UserAddress> list = userAddressMapper.select(userAddress1);
             if (!CollectionUtils.isEmpty(list)){
                 UserAddress userAddress2 = new UserAddress();
-                userAddress2.setIsDefault(1);
+                userAddress2.setIsDefault(YesOrNo.YES.getType());
                 userAddress2.setId(list.get(0).getId());
                 userAddressMapper.updateByPrimaryKeySelective(userAddress2);
             }
             return;
         }
         userAddressMapper.deleteByPrimaryKey(addressId);
+    }
+
+    /**
+     * 修改用户默认收货地址
+     * @param userId
+     * @param addressId
+     */
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void updateDefaultAddress(String userId,String addressId){
+        //删除所有的的默认收货地址(保险起见)
+        UserAddress queryAddress = new UserAddress();
+        queryAddress.setIsDefault(YesOrNo.YES.getType());
+        queryAddress.setUserId(userId);
+        List<UserAddress> addressList = userAddressMapper.select(queryAddress);
+        for (UserAddress userAddress : addressList){
+            userAddress.setIsDefault(YesOrNo.NO.getType());
+            userAddressMapper.updateByPrimaryKeySelective(userAddress);
+        }
+        //根据addressId设置新的默认收货地址
+        UserAddress updateAddress = new UserAddress();
+        updateAddress.setIsDefault(YesOrNo.YES.getType());
+        updateAddress.setId(addressId);
+        userAddressMapper.updateByPrimaryKeySelective(updateAddress);
     }
 
 

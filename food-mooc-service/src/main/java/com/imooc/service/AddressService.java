@@ -8,4 +8,5 @@ public interface AddressService {
     List<UserAddress> list(String userId);
     void update(UserAddress userAddress);
     void delete(String addressId,String userId);
+    void updateDefaultAddress(String userId,String addressId);
 }

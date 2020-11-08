@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -58,21 +59,36 @@ public class AddressController {
     @PostMapping("/update")
     public IMOOCJSONResult update(
         @RequestBody UserAddress userAddress) {
-       if (checkAddress(userAddress)!=null){
+        if (StringUtils.isBlank(userAddress.getId())){
+            return IMOOCJSONResult.errorMsg("地址id不能为空");
+        }
+        if (checkAddress(userAddress)!=null){
            return IMOOCJSONResult.errorMsg(checkAddress(userAddress));
        }
        addressService.update(userAddress);
        return IMOOCJSONResult.ok();
     }
-    @ApiOperation(value = "删除收货地址", notes = "用于删除收货地址的接口", httpMethod = "Delete")
-    @PostMapping("/detele")
+    @ApiOperation(value = "删除收货地址", notes = "用于删除收货地址的接口", httpMethod = "POST")
+    @PostMapping("/delete")
     public IMOOCJSONResult delete(
         @RequestParam String addressId,
         @RequestParam String userId) {
-        if (StringUtils.isBlank(addressId)||StringUtils.isNotBlank(userId)){
+        if (StringUtils.isBlank(addressId)||StringUtils.isBlank(userId)){
             return IMOOCJSONResult.errorMsg("用户id或收货地址id为空");
         }
         addressService.delete(addressId,userId);
+        return IMOOCJSONResult.ok();
+    }
+
+    @ApiOperation(value = "修改默认收货地址", notes = "用于修改默认收货地址的接口", httpMethod = "POST")
+    @PostMapping("/setDefault")
+    public IMOOCJSONResult setDefault(
+        @RequestParam String addressId,
+        @RequestParam String userId) {
+        if (StringUtils.isBlank(addressId)||StringUtils.isBlank(userId)){
+            return IMOOCJSONResult.errorMsg("用户id或收货地址id为空");
+        }
+        addressService.updateDefaultAddress(userId,addressId);
         return IMOOCJSONResult.ok();
     }
     private String checkAddress(UserAddress userAddress) {
