@@ -16,6 +16,6 @@ public interface OrderService {
      * 提交订单
      * @param orderBo
      */
-    void create(OrderBo orderBo);
+    String create(OrderBo orderBo);
 
 }

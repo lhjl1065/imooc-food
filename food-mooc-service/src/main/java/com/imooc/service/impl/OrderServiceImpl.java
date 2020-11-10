@@ -60,7 +60,7 @@ public class OrderServiceImpl implements OrderService {
     private Sid sid;
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public void create(OrderBo orderBo) {
+    public String create(OrderBo orderBo) {
         //封装订单表数据
         Orders orders = new Orders();
         Users user = usersMapper.selectByPrimaryKey(orderBo.getUserId());
@@ -124,5 +124,8 @@ public class OrderServiceImpl implements OrderService {
         //更新该用户的购物车数据
 
         //向支付中心发起请求
+
+        //返回订单id
+        return orderId;
     }
 }

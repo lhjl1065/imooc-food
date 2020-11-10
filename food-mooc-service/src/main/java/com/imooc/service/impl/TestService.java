@@ -2,6 +2,7 @@ package com.imooc.service.impl;
 
 import com.imooc.mapper.StuMapper;
 import com.imooc.pojo.Stu;
+import com.imooc.service.transaction.callback.TransactionCallBackService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -11,6 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class TestService {
     @Autowired
     private StuMapper stuMapper;
+
+    @Autowired
+    private TransactionCallBackService transactionCallBackService;
+
     @Transactional(propagation = Propagation.SUPPORTS)
     public Stu queryById(int id){
         return stuMapper.selectByPrimaryKey(id);
@@ -30,7 +35,8 @@ public class TestService {
     public void updateStu(Stu stu) {
         Stu stu1 = stuMapper.selectByPrimaryKey(1);
         stuMapper.updateAge(1);
-        System.out.println(Thread.currentThread().getName());
+        System.out.println("发送mq消息");
+
     }
 
     /*
