@@ -44,4 +44,13 @@ public class UserBo {
         this.password = password;
         this.confirmPassword = confirmPassword;
     }
+
+    @Override
+    public String toString() {
+        return "UserBo{" +
+            "username='" + username + '\'' +
+            ", password='" + password + '\'' +
+            ", confirmPassword='" + confirmPassword + '\'' +
+            '}';
+    }
 }

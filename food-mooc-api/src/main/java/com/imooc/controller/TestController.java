@@ -33,7 +33,7 @@ public class TestController {
     @PostMapping("/stu")
     public Object saveStu(@RequestBody Stu stu){
         testService.saveStu(stu);
-        return "ok";
+        return "ok "+stu.toString();
     }
     @DeleteMapping("/stu")
     public Object deleteStuById(int id){

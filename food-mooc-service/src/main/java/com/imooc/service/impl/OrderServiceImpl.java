@@ -1,7 +1,11 @@
 package com.imooc.service.impl;
 
 import com.imooc.common.enums.OrderStatusEnum;
+import com.imooc.common.enums.PayMethod;
 import com.imooc.common.enums.YesOrNo;
+import com.imooc.common.utils.CookieUtils;
+import com.imooc.common.utils.IMOOCJSONResult;
+import com.imooc.common.utils.JsonUtils;
 import com.imooc.manager.ItemManager;
 import com.imooc.mapper.ItemsImgMapper;
 import com.imooc.mapper.ItemsMapper;
@@ -19,15 +23,26 @@ import com.imooc.pojo.OrderStatus;
 import com.imooc.pojo.Orders;
 import com.imooc.pojo.UserAddress;
 import com.imooc.pojo.Users;
+import com.imooc.pojo.bo.MerchantOrdersBO;
 import com.imooc.pojo.bo.OrderBo;
 import com.imooc.service.OrderService;
 import java.util.Date;
+import javax.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.n3r.idworker.Sid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
+
 @Service
+@Slf4j
 public class OrderServiceImpl implements OrderService {
     @Autowired
     private UsersMapper usersMapper;
@@ -57,7 +72,11 @@ public class OrderServiceImpl implements OrderService {
     private OrderStatusMapper orderStatusMapper;
 
     @Autowired
+    private RestTemplate restTemplate;
+
+    @Autowired
     private Sid sid;
+
 
     @Transactional(propagation = Propagation.REQUIRED)
     public String create(OrderBo orderBo) {
@@ -127,5 +146,68 @@ public class OrderServiceImpl implements OrderService {
 
         //返回订单id
         return orderId;
+    }
+
+    public IMOOCJSONResult sendOrderToPayCenter(String orderId, HttpServletRequest request) {
+        //封装发送的bo类
+        MerchantOrdersBO merchantOrdersBO = new MerchantOrdersBO();
+        merchantOrdersBO.setMerchantOrderId(orderId);
+        merchantOrdersBO.setPayMethod(PayMethod.WEIXIN.type);
+        String userStr = CookieUtils.getCookieValue(request, "user",true);
+        Users user = JsonUtils.jsonToPojo(userStr, Users.class);
+        merchantOrdersBO.setMerchantUserId(user.getId());
+        merchantOrdersBO.setAmount(ordersMapper.selectByPrimaryKey(orderId).getRealPayAmount());
+        merchantOrdersBO.setReturnUrl("49.235.197.123:8088/orders/notifyMerchantOrderPaid");
+        //发送http请求给聚合支付中心
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        httpHeaders.add("imoocUserId","imooc");
+        httpHeaders.add("password","imooc");
+        String url="http://payment.t.mukewang.com/foodie-payment/payment/createMerchantOrder";
+        HttpEntity<MerchantOrdersBO> httpEntity = new HttpEntity<>(merchantOrdersBO, httpHeaders);
+        ResponseEntity<IMOOCJSONResult> responseEntity = restTemplate
+            .postForEntity(url, httpEntity, IMOOCJSONResult.class);
+        IMOOCJSONResult result = responseEntity.getBody();
+        Integer statusCode = result.getStatus();
+        if (statusCode!=200){
+            log.error("向聚合支付中心提交订单失败");
+            return IMOOCJSONResult.errorMsg("订单提交失败");
+        }
+        return IMOOCJSONResult.ok(orderId);
+
+
+    }
+
+    @Transactional
+    public Integer updateOrderStatus(OrderStatusEnum orderStatusEnum, String orderId) {
+        OrderStatus updateOrderStatus = new OrderStatus();
+        switch(orderStatusEnum.value){
+            case "待发货":
+                updateOrderStatus.setPayTime(new Date());
+                break;
+            case "待收货":
+                updateOrderStatus.setDeliverTime(new Date());
+                break;
+            case "交易成功":
+                updateOrderStatus.setSuccessTime(new Date());
+                break;
+            case "交易失败":
+                updateOrderStatus.setCloseTime(new Date());
+                break;
+        }
+        updateOrderStatus.setOrderId(orderId);
+        updateOrderStatus.setOrderStatus(orderStatusEnum.type);
+        int result = orderStatusMapper.updateByPrimaryKeySelective(updateOrderStatus);
+        if (result!=1){
+            log.error("更新订单状态失败");
+            return 500;
+        }
+        log.info("订单{}更新为{}状态成功",orderId,orderStatusEnum.value);
+        return 200;
+    }
+
+    @Override
+    public OrderStatus queryOrderStatus(String orderId) {
+        return orderStatusMapper.selectByPrimaryKey(orderId);
     }
 }
