@@ -14,6 +14,7 @@ public class CorsConfig {
         CorsConfiguration config = new CorsConfiguration();
         //添加允许跨域的访问源
         config.addAllowedOrigin("http://localhost:8080");
+        config.addAllowedOrigin("http://kgb4db.natappfree.cc");
         //添加允许跨域的Http方法
         config.addAllowedMethod("*");
         //添加允许的头信息

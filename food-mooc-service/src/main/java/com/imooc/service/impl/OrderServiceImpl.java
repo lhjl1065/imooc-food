@@ -127,9 +127,8 @@ public class OrderServiceImpl implements OrderService {
             //todo 因为购物数量要从购物车里面取,所以先默认为1件
             orderItems.setBuyCounts(1);
             orderItemsMapper.insert(orderItems);
-            //对应规格的库存要减去购买数
+            //对1应规格的库存要减去购买数
             itemManager.decreaseStock(itemSpecId,1);
-
         }
         orders.setRealPayAmount(realPayAmount);
         orders.setTotalAmount(totalAmount);
@@ -156,8 +155,10 @@ public class OrderServiceImpl implements OrderService {
         String userStr = CookieUtils.getCookieValue(request, "user",true);
         Users user = JsonUtils.jsonToPojo(userStr, Users.class);
         merchantOrdersBO.setMerchantUserId(user.getId());
-        merchantOrdersBO.setAmount(ordersMapper.selectByPrimaryKey(orderId).getRealPayAmount());
-        merchantOrdersBO.setReturnUrl("49.235.197.123:8088/orders/notifyMerchantOrderPaid");
+//        merchantOrdersBO.setAmount(ordersMapper.selectByPrimaryKey(orderId).getRealPayAmount());真实价格
+        //方便测试所有价格改为一分钱
+        merchantOrdersBO.setAmount(1);
+        merchantOrdersBO.setReturnUrl("http://kgb4db.natappfree.cc/orders/notifyMerchantOrderPaid");
         //发送http请求给聚合支付中心
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);

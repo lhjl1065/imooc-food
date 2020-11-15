@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,7 +35,7 @@ public class OrderController {
         @RequestBody OrderBo orderBo,
         HttpServletRequest request,
         HttpServletResponse response) {
-        //订单入库
+        //订单入库(天天吃货中心)
         String orderId = orderService.create(orderBo);
         //todo 更新redis中的购物车
 
@@ -47,7 +48,7 @@ public class OrderController {
     }
     @ApiOperation(value = "接收聚合支付中心通知的接口",notes = "接收聚合支付中心通知的接口",httpMethod = "POST")
     @PostMapping("/notifyMerchantOrderPaid")
-    public Integer notifyMerchantOrderPaid(@RequestBody String merchantOrderId){
+    public Integer notifyMerchantOrderPaid(String merchantOrderId){
         //根据这个订单号修改订单状态为支付完成
         return orderService.updateOrderStatus(OrderStatusEnum.WAIT_DELIVER,merchantOrderId);
     }
