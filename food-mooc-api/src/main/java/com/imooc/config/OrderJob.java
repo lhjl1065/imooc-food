@@ -36,7 +36,7 @@ public class OrderJob {
      * 关闭超时的订单(超过12小时未支付就关闭)
      */
     @Transactional
-    @Scheduled(cron = "0/3 * * * * ? ")
+//    @Scheduled(cron = "0/3 * * * * ? ")
     public void closeTimeoutOrders(){
         OrderStatus orderStatus = new OrderStatus();
         orderStatus.setOrderStatus(OrderStatusEnum.WAIT_PAY.type);
@@ -60,14 +60,6 @@ public class OrderJob {
         updateOrderStatus.setOrderStatus(OrderStatusEnum.CLOSE.type);
         updateOrderStatus.setCloseTime(new Date());
         updateOrderStatus.setOrderId(orderStatus.getOrderId());
-        orderStatusMapper.insert(updateOrderStatus);
-    }
-    @Scheduled(cron = "0 0/1 * * * ? ")
-    public void method2(){
-        try {
-            int a=2/0;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        orderStatusMapper.updateByPrimaryKeySelective(updateOrderStatus);
     }
 }
