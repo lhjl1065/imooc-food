@@ -6,6 +6,7 @@ import com.imooc.common.utils.CookieUtils;
 import com.imooc.common.utils.IMOOCJSONResult;
 import com.imooc.pojo.OrderStatus;
 import com.imooc.pojo.bo.MerchantOrdersBO;
+import com.imooc.pojo.bo.NoteBo;
 import com.imooc.pojo.bo.OrderBo;
 import com.imooc.service.OrderService;
 import io.swagger.annotations.Api;
@@ -15,9 +16,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
