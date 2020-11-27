@@ -2,7 +2,9 @@ package com.imooc.service.impl;
 
 import com.imooc.mapper.StuMapper;
 import com.imooc.pojo.Stu;
+import com.imooc.pojo.Stu1;
 import com.imooc.service.transaction.callback.TransactionCallBackService;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -17,8 +19,9 @@ public class TestService {
     private TransactionCallBackService transactionCallBackService;
 
     @Transactional(propagation = Propagation.SUPPORTS)
-    public Stu queryById(int id){
-        return stuMapper.selectByPrimaryKey(id);
+    public List<Stu1> queryById(int id){
+        System.out.println("111111111");
+        return stuMapper.getAll();
     }
 
     @Transactional(propagation = Propagation.REQUIRED)

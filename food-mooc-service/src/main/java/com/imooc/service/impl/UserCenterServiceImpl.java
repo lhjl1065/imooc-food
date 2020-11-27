@@ -1,9 +1,15 @@
 package com.imooc.service.impl;
 
+import com.imooc.common.utils.CookieUtils;
+import com.imooc.common.utils.JsonUtils;
 import com.imooc.mapper.UsersMapper;
 import com.imooc.pojo.Users;
+import com.imooc.pojo.bo.UserInfoBo;
 import com.imooc.pojo.vo.UserInfoVo;
 import com.imooc.service.UserCenterService;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,4 +34,21 @@ public class UserCenterServiceImpl implements UserCenterService {
         BeanUtils.copyProperties(user, userInfoVo);
         return userInfoVo;
     }
+
+    @Override
+    public UserInfoVo updateUserInfo(UserInfoBo userInfoBo,String userId, HttpServletRequest request,
+        HttpServletResponse response) {
+        //更新数据库
+        Users updateUsers = new Users();
+        BeanUtils.copyProperties(userInfoBo,updateUsers);
+        usersMapper.updateByPrimaryKeySelective(updateUsers);
+        Users users = usersMapper.selectByPrimaryKey(userId);
+        //刷新cookie
+        CookieUtils.setCookie(request,response,"user", JsonUtils.objectToJson(users),true);
+        UserInfoVo userInfoVo = new UserInfoVo();
+        BeanUtils.copyProperties(users,userInfoVo);
+        return userInfoVo;
+    }
+
+
 }
