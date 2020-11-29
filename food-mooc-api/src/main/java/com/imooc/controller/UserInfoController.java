@@ -8,11 +8,15 @@ import com.imooc.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import java.util.HashMap;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,15 +39,26 @@ public class UserInfoController {
     private UserCenterService userCenterService;
 
     @PostMapping("/update")
-    @ApiOperation(value = "更新用户信息接口",notes = "更新用户信息接口",httpMethod = "GET")
+    @ApiOperation(value = "更新用户信息接口",notes = "更新用户信息接口",httpMethod = "POST")
     public IMOOCJSONResult updateUserInfo(
-        @RequestParam @ApiParam(name = "用户id",required = true,example = "200924GA7FBNTSCH") String userId,
+        @RequestParam @ApiParam(value = "用户id",required = true,example = "200924GA7FBNTSCH") String userId,
         @Valid @RequestBody UserInfoBo userInfoBo,
         BindingResult result,
         HttpServletRequest request,
         HttpServletResponse response){
-        result.getClass().getName();
+        //验证参数
+        Map<String, String> errorMap = getErrorMap(result);
+        if (errorMap.size()>=1){
+            return IMOOCJSONResult.errorMap(errorMap);
+        }
         UserInfoVo userInfoVo=userCenterService.updateUserInfo(userInfoBo,userId,request,response);
         return IMOOCJSONResult.ok(userInfoVo);
+    }
+    private Map<String, String> getErrorMap(BindingResult result){
+        HashMap<String, String> errorMessageResult = new HashMap<>();
+        for (FieldError error:result.getFieldErrors()){
+            errorMessageResult.put(error.getField(),error.getDefaultMessage());
+        }
+        return errorMessageResult;
     }
 }

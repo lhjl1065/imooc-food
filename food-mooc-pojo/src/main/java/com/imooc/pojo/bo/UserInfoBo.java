@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import java.util.Date;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Pattern;
 import lombok.Getter;
@@ -32,6 +33,7 @@ public class UserInfoBo {
     /**
      * 真实姓名
      */
+    @NotBlank(message = "真实姓名不能为空")
     @Length(min = 1,max = 12,message = "真实姓名必须长度大于1小于12")
     @ApiModelProperty(value = "姓名",example = "令狐珺岚")
     private String realname;
@@ -39,6 +41,7 @@ public class UserInfoBo {
     /**
      * 手机号 手机号
      */
+    @NotBlank(message = "手机号不能为空")
     @Pattern(regexp = "^(((13[0-9]{1})|(15[0-9]{1})|(18[0-9]{1}))+\\d{8})$",message = "电话号码必须符合格式")
     @Length(max = 11)
     @ApiModelProperty(value = "电话号码",example = "15519021091")
@@ -47,6 +50,7 @@ public class UserInfoBo {
     /**
      * 邮箱地址 邮箱地址
      */
+    @NotBlank(message = "邮箱不能为空")
     @Email(message = "邮箱必须符合格式")
     @ApiModelProperty(value = "邮箱",example = "106527001@qq")
     private String email;
@@ -54,6 +58,7 @@ public class UserInfoBo {
     /**
      * 性别 性别 1:男  0:女  2:保密
      */
+    @NotNull(message = "性别不能为空")
     @Range(min = 0,max = 2,message = "性别只能是0, 1, 2")
     @ApiModelProperty("性别")
     private Integer sex;
@@ -61,6 +66,7 @@ public class UserInfoBo {
     /**
      * 生日 生日
      */
+    @NotNull(message = "生日不能为空")
     @Past(message = "生日必须是一个过去的日期")
     @ApiModelProperty("生日")
     private Date birthday;

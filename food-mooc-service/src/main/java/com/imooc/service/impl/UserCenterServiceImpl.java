@@ -40,6 +40,7 @@ public class UserCenterServiceImpl implements UserCenterService {
         HttpServletResponse response) {
         //更新数据库
         Users updateUsers = new Users();
+        updateUsers.setId(userId);
         BeanUtils.copyProperties(userInfoBo,updateUsers);
         usersMapper.updateByPrimaryKeySelective(updateUsers);
         Users users = usersMapper.selectByPrimaryKey(userId);

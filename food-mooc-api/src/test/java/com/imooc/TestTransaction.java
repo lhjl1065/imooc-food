@@ -16,13 +16,6 @@ public class TestTransaction {
 
     @Test
     public void testTransaction(){
-        int a=10;
-        try {
-            Assert.assertEquals(a,100);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        System.out.println("11111111111");
-//        transactionService.testTransaction();
+        transactionService.testTransaction();
     }
 }
