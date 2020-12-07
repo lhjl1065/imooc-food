@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 @Setter
 @Getter
 @Component
-@ConfigurationProperties(prefix = "myfile")
+@ConfigurationProperties(prefix = "bone")
 public class FileProperties {
     private String imgUserFaceLocation;
 
