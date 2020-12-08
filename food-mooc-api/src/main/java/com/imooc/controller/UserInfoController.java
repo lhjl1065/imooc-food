@@ -63,6 +63,9 @@ public class UserInfoController {
             //定义文件名称
             String[] split = file.getOriginalFilename().split("\\.");
             String suffix=split[split.length-1];//拿到后缀名
+            if (!"jpeg".equalsIgnoreCase(suffix) &&!"jpg".equalsIgnoreCase(suffix)&&!"png".equalsIgnoreCase(suffix)){
+                return IMOOCJSONResult.errorMsg("图片格式不正确");
+            }
             String fileName=File.separator+"face"+userId+"."+suffix;
             //定义绝对路径
             String filePath=dirPath+fileName;
