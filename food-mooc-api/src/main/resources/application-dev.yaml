@@ -1,2 +1,3 @@
 bone:
   img-user-face-location: G:\CodeHome\新建文件夹\trunk\food-mooc-api\src\main\resources
+  file-url-path-header: http://localhost:8088
