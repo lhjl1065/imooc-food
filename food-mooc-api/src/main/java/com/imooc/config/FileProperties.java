@@ -16,7 +16,15 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties(prefix = "bone")
 public class FileProperties {
+
+    /**
+     * 图片本地磁盘存放位置
+     */
     private String imgUserFaceLocation;
+    /**
+     * 文件映射访问路径头
+     */
+    private String fileUrlPathHeader;
 
     public String getImgUserFaceLocation() {
         return imgUserFaceLocation;

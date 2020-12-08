@@ -7,4 +7,7 @@ public interface UserService {
     boolean queryUsernameIsExist(String name);
     void createUser(UserBo userBo);
     Users login(UserBo userBo);
+    Users updateUserFaceUrl(String userFaceUrl,String userId);
+    Users getUserInfo(String userId);
+
 }

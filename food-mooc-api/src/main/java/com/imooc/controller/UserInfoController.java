@@ -2,8 +2,12 @@ package com.imooc.controller;
 
 import com.imooc.common.MyConstant;
 import com.imooc.common.MyConstant.pathSConstant;
+import com.imooc.common.utils.CookieUtils;
+import com.imooc.common.utils.DateUtil;
 import com.imooc.common.utils.IMOOCJSONResult;
+import com.imooc.common.utils.JsonUtils;
 import com.imooc.config.FileProperties;
+import com.imooc.pojo.Users;
 import com.imooc.pojo.bo.UserInfoBo;
 import com.imooc.pojo.vo.UserInfoVo;
 import com.imooc.service.UserCenterService;
@@ -16,6 +20,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
@@ -55,11 +60,13 @@ public class UserInfoController {
     @ApiOperation(value = "上传用户头像的接口",notes = "上传用户头像接口",httpMethod = "POST")
     public IMOOCJSONResult updateUserFace(
         @RequestParam @ApiParam(value = "用户id",required = true,example = "200924GA7FBNTSCH") String userId,
-        MultipartFile file){
+        MultipartFile file,
+        HttpServletRequest request,
+        HttpServletResponse response){
 
         if (file!=null|| StringUtils.isNotBlank(file.getOriginalFilename())){
             //定义用户文件夹路径
-            String dirPath= fileProperties.getImgUserFaceLocation()+ File.separator+userId;
+            String dirPath= fileProperties.getImgUserFaceLocation()+ File.separator+userId + File.separator;
             //定义文件名称
             String[] split = file.getOriginalFilename().split("\\.");
             String suffix=split[split.length-1];//拿到后缀名
@@ -79,6 +86,14 @@ public class UserInfoController {
                 InputStream inputStream = file.getInputStream();
                 fileOutputStream = new FileOutputStream(newFile);
                 IOUtils.copy(inputStream, fileOutputStream);
+                // 获取访问改图片映射路径,更新用户表的头像字段,携带时间戳为路径参数,防止浏览器缓存
+                String userFaceUrl = fileProperties.getFileUrlPathHeader()+"/"+userId+"/"+fileName + "?time=" +DateUtil.getCurrentDateString(DateUtil.DATE_PATTERN);
+                Users users = userService.updateUserFaceUrl(userFaceUrl, userId);
+                // 更新cookie
+                setNull(users);
+                CookieUtils.setCookie(request,response,"user",JsonUtils.objectToJson(users),true);
+
+
             }catch (IOException e){
                 e.printStackTrace();
             }finally {
@@ -120,5 +135,14 @@ public class UserInfoController {
             errorMessageResult.put(error.getField(),error.getDefaultMessage());
         }
         return errorMessageResult;
+    }
+
+    private void setNull(Users userResult){
+        userResult.setPassword(null);
+        userResult.setCreatedTime(null);
+        userResult.setUpdatedTime(null);
+        userResult.setEmail(null);
+        userResult.setMobile(null);
+        userResult.setBirthday(null);
     }
 }
