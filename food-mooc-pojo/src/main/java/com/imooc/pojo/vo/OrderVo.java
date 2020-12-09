@@ -38,6 +38,6 @@ public class OrderVo {
     /**
      * 子订单
      */
-    private List<SubOrderVo> subOrders;
+    private List<SubOrderVo> subOrderItemList;
 
 }

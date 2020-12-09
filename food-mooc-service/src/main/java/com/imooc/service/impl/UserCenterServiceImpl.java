@@ -1,12 +1,19 @@
 package com.imooc.service.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.imooc.common.utils.CookieUtils;
 import com.imooc.common.utils.JsonUtils;
+import com.imooc.mapper.OrdersMapper;
+import com.imooc.mapper.OrdersMapperCustom;
 import com.imooc.mapper.UsersMapper;
+import com.imooc.pojo.PagedGridResult;
 import com.imooc.pojo.Users;
 import com.imooc.pojo.bo.UserInfoBo;
+import com.imooc.pojo.vo.OrderVo;
 import com.imooc.pojo.vo.UserInfoVo;
 import com.imooc.service.UserCenterService;
+import java.util.List;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -25,6 +32,8 @@ public class UserCenterServiceImpl implements UserCenterService {
 
     @Autowired
     private UsersMapper usersMapper;
+    @Autowired
+    private OrdersMapperCustom ordersMapperCustom;
 
     @Override
     public UserInfoVo getUserInfo(String userId) {
@@ -49,6 +58,25 @@ public class UserCenterServiceImpl implements UserCenterService {
         UserInfoVo userInfoVo = new UserInfoVo();
         BeanUtils.copyProperties(users,userInfoVo);
         return userInfoVo;
+    }
+
+    @Override
+    public PagedGridResult queryUserOrder(Integer page, Integer pageSize, String userId, Integer status) {
+        //分页查询
+        PageHelper.startPage(page,pageSize);
+        List<OrderVo> orders = ordersMapperCustom.getMyOrders(userId, status);
+        return setterPagedGridResult(orders,page);
+
+    }
+    PagedGridResult setterPagedGridResult(List<?> list,Integer page){
+        PageInfo pageList = new PageInfo<>(list);
+        PagedGridResult pagedGridResult = new PagedGridResult();
+        pagedGridResult.setPage(page);
+        pagedGridResult.setRows(list);
+        pagedGridResult.setTotal(pageList.getPages());
+        pagedGridResult.setRecords(pageList.getTotal());
+        return pagedGridResult;
+
     }
 
 

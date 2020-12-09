@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
@@ -24,7 +25,7 @@ public class TestController {
     private StuMapper stuMapper;
 
     @GetMapping("/stu")
-    public IMOOCJSONResult show(int id){
+    public IMOOCJSONResult show(@RequestParam Integer id){
         logger.info("进入/stu方法是执行");
         return IMOOCJSONResult.ok(testService.queryById(id));
     }

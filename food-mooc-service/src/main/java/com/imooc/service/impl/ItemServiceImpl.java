@@ -110,7 +110,6 @@ public class ItemServiceImpl implements ItemService {
         return setterPagedGridResult(list,page);
 
     }
-    @Transactional(propagation =Propagation.SUPPORTS)
     PagedGridResult setterPagedGridResult(List<?> list,Integer page){
         PageInfo pageList = new PageInfo(list);
         PagedGridResult pagedGridResult = new PagedGridResult();
