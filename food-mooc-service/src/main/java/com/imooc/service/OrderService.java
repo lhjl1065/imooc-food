@@ -34,4 +34,16 @@ public interface OrderService {
      */
     Integer updateOrderStatus(OrderStatusEnum orderStatusEnum,String orderId);
     OrderStatus queryOrderStatus(String orderId);
+
+    /**
+     * 验证该用户是否存在该订单
+     * @param userId
+     * @param orderId
+     * @return
+     */
+    boolean checkOrderAndUserId(String userId, String orderId);
+
+    boolean deliver(String orderId);
+
+    boolean confirmReceive(String orderId);
 }

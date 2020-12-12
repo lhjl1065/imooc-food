@@ -1,8 +1,10 @@
 package com.imooc.controller;
 
+import com.imooc.common.enums.OrderStatusEnum;
 import com.imooc.common.utils.IMOOCJSONResult;
 import com.imooc.pojo.PagedGridResult;
 import com.imooc.pojo.vo.UserInfoVo;
+import com.imooc.service.OrderService;
 import com.imooc.service.UserCenterService;
 import com.imooc.service.UserService;
 import io.swagger.annotations.Api;
@@ -10,7 +12,9 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,6 +28,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class MyOrdersController {
     @Autowired
     private UserCenterService userCenterService;
+    @Autowired
+    private OrderService orderService;
 
     @PostMapping("/query")
     @ApiOperation(value = "查询用户订单的接口",notes = "查询用户订单的接口",httpMethod = "POST")
@@ -37,6 +43,24 @@ public class MyOrdersController {
         PagedGridResult pagedGridResult = userCenterService.queryUserOrder(page, pageSize, userId, orderStatus);
         return IMOOCJSONResult.ok(pagedGridResult);
     }
+
+    @ApiOperation(value = "用户确认订单的接口",notes = "用户确认订单的接口",httpMethod = "POST")
+    @PostMapping("/confirmReceive")
+    public IMOOCJSONResult confirmReceive(@RequestParam String orderId,@RequestParam String userId) {
+       // 检查订单和用户是否匹配
+        boolean flag = orderService.checkOrderAndUserId(userId,orderId);
+        if (!flag){
+            return IMOOCJSONResult.errorMsg("用户和订单不匹配");
+        }
+        boolean flag2=orderService.confirmReceive(orderId);
+        if (!flag2){
+            return IMOOCJSONResult.errorMsg("更新状态为确认收货失败");
+        }
+        return IMOOCJSONResult.ok();
+
+
+    }
+
 
 
 

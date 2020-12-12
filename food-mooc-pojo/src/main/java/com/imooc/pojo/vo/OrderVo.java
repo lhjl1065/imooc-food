@@ -36,6 +36,10 @@ public class OrderVo {
      */
     private Integer orderStatus;
     /**
+     * 是否已评价
+     */
+    private Integer isComment;
+    /**
      * 子订单
      */
     private List<SubOrderVo> subOrderItemList;

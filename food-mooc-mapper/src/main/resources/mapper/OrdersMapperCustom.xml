@@ -5,13 +5,14 @@
     <!--
       WARNING - @mbg.generated
     -->
-    <id column="id" property="orderId" />
+    <id column="orderId" property="orderId" />
     <result column="created_time" property="createdTime" />
     <result column="real_pay_amount" property="realPayAmount"  />
     <result column="post_amount" property="postAmount"  />
     <result column="pay_method" property="payMethod"  />
     <result column="order_status" property="orderStatus"/>
-    <collection property="subOrderItemList" ofType="com.imooc.pojo.vo.SubOrderVo">
+    <result column="is_comment" property="isComment"/>
+    <collection property="subOrderItemList" column="orderId" select="listItemsByOrderId" ofType="com.imooc.pojo.vo.SubOrderVo">
       <result column="item_id" property="itemId"/>
       <result column="item_img" property="itemImg"/>
       <result column="item_spec_name" property="itemSpecName"/>
@@ -19,27 +20,31 @@
       <result column="price" property="price"/>
     </collection>
   </resultMap>
-  <select id="getMyOrders" resultMap="BaseResultMap">
+  <select id="listMyOrders" resultMap="BaseResultMap">
     SELECT
-    o.id,
+    o.id AS orderId,
     o.created_time,
     o.total_amount,
     o.real_pay_amount,
     o.post_amount,
     o.pay_method,
     o.is_comment,
-    os.order_status,
-    oi.item_id,
-    oi.item_img,
-    oi.item_spec_name,
-    oi.buy_counts,
-    oi.price
+    os.order_status
     FROM orders o
     LEFT JOIN order_status os ON o.`id` = os.`order_id`
-    LEFT JOIN order_items oi ON o.`id` = oi.`order_id`
     WHERE o.`user_id` = #{userId} AND o.`is_delete`= 0
     <if test="orderStatus != null">
       AND os.order_status = #{orderStatus}
     </if>
+  </select>
+  <select id="listItemsByOrderId" resultType="com.imooc.pojo.vo.SubOrderVo" parameterType="String">
+    SELECT
+    oi.item_id AS itemId,
+    oi.item_img AS itemImg,
+    oi.item_spec_name AS itemSpecName,
+    oi.buy_counts AS buyCounts,
+    oi.price AS price
+    FROM order_items oi
+    WHERE oi.`order_id` = #{orderId}
   </select>
 </mapper>

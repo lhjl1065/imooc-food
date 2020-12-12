@@ -64,7 +64,7 @@ public class UserCenterServiceImpl implements UserCenterService {
     public PagedGridResult queryUserOrder(Integer page, Integer pageSize, String userId, Integer status) {
         //分页查询
         PageHelper.startPage(page,pageSize);
-        List<OrderVo> orders = ordersMapperCustom.getMyOrders(userId, status);
+        List<OrderVo> orders = ordersMapperCustom.listMyOrders(userId, status);
         return setterPagedGridResult(orders,page);
 
     }

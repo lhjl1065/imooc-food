@@ -17,7 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,6 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class OrderController {
     @Autowired
     private OrderService orderService;
+
 
 
 
@@ -46,8 +49,6 @@ public class OrderController {
 //        CookieUtils.setCookie(request,response,"shopcart","",true);
         //给聚合支付中心发送交易请求
         return orderService.sendOrderToPayCenter(orderId,request);
-
-
     }
     @ApiOperation(value = "接收聚合支付中心通知的接口",notes = "接收聚合支付中心通知的接口",httpMethod = "POST")
     @PostMapping("/notifyMerchantOrderPaid")
@@ -62,6 +63,18 @@ public class OrderController {
         //查询订单状态
         OrderStatus orderStatus = orderService.queryOrderStatus(orderId);
         return IMOOCJSONResult.ok(orderStatus);
+    }
+
+    @ApiOperation(value = "商户用于发货接口",notes = "商户用于发货接口",httpMethod = "PUT")
+    @PutMapping("/deliver/{orderId}")
+    public IMOOCJSONResult deliver(@PathVariable String orderId) {
+        // 检测是否存在该用户是否有此订单且是已付款/待发货状态的
+        boolean flag=orderService.deliver(orderId);
+        if (flag){
+            return IMOOCJSONResult.ok("修改订单为已发货状态");
+        }
+        return IMOOCJSONResult.errorMsg("修改订单状态失败");
+
     }
 
 

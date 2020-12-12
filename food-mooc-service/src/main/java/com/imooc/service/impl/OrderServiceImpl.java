@@ -27,6 +27,7 @@ import com.imooc.pojo.bo.MerchantOrdersBO;
 import com.imooc.pojo.bo.OrderBo;
 import com.imooc.service.OrderService;
 import java.util.Date;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.n3r.idworker.Sid;
@@ -40,6 +41,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
+import tk.mybatis.mapper.entity.Example;
+import tk.mybatis.mapper.entity.Example.Criteria;
 
 @Service
 @Slf4j
@@ -76,6 +79,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private Sid sid;
+
 
 
     @Transactional(propagation = Propagation.REQUIRED)
@@ -210,5 +214,44 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderStatus queryOrderStatus(String orderId) {
         return orderStatusMapper.selectByPrimaryKey(orderId);
+    }
+
+    @Override
+    public boolean checkOrderAndUserId(String userId, String orderId) {
+        Orders queryOrder = new Orders();
+        queryOrder.setId(orderId);
+        queryOrder.setUserId(userId);
+        List<Orders> list = ordersMapper.select(queryOrder);
+        if (list.isEmpty()){
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED)
+    public boolean deliver(String orderId) {
+        OrderStatus updateOrderStatus = new OrderStatus();
+        updateOrderStatus.setDeliverTime(new Date());
+        updateOrderStatus.setOrderStatus(OrderStatusEnum.WAIT_RECEIVE.type);
+        Example example = new Example(OrderStatus.class);
+        Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("orderId",orderId)
+            .andEqualTo("orderStatus",OrderStatusEnum.WAIT_DELIVER.type);
+        int count = orderStatusMapper.updateByExampleSelective(updateOrderStatus, example);
+        return count > 0;
+    }
+
+    @Override
+    public boolean confirmReceive(String orderId) {
+        OrderStatus updateOrderStatus = new OrderStatus();
+        updateOrderStatus.setSuccessTime(new Date());
+        updateOrderStatus.setOrderStatus(OrderStatusEnum.SUCCESS.type);
+        Example example = new Example(OrderStatus.class);
+        Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("orderId",orderId)
+            .andEqualTo("orderStatus",OrderStatusEnum.WAIT_RECEIVE.type);
+        int i = orderStatusMapper.updateByExampleSelective(updateOrderStatus, example);
+        return i > 0;
     }
 }

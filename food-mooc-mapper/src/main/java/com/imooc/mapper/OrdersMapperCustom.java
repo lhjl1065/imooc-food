@@ -7,5 +7,5 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 public interface OrdersMapperCustom extends MyMapper<Orders> {
-    List<OrderVo> getMyOrders(@Param("userId") String userId,@Param("orderStatus") Integer orderStatus);
+    List<OrderVo> listMyOrders(@Param("userId") String userId,@Param("orderStatus") Integer orderStatus);
 }
