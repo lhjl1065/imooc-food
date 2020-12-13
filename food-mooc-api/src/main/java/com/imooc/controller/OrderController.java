@@ -41,13 +41,13 @@ public class OrderController {
         @RequestBody OrderBo orderBo,
         HttpServletRequest request,
         HttpServletResponse response) {
-        //订单入库(天天吃货中心)
+        // 订单入库(天天吃货中心)
         String orderId = orderService.create(orderBo);
         //todo 更新redis中的购物车
 
-        //同步前端中的购物车数据(同步cookie)
+        // 同步前端中的购物车数据(同步cookie)
 //        CookieUtils.setCookie(request,response,"shopcart","",true);
-        //给聚合支付中心发送交易请求
+        // 给聚合支付中心发送交易请求
         return orderService.sendOrderToPayCenter(orderId,request);
     }
     @ApiOperation(value = "接收聚合支付中心通知的接口",notes = "接收聚合支付中心通知的接口",httpMethod = "POST")

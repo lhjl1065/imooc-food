@@ -36,6 +36,7 @@
     <if test="orderStatus != null">
       AND os.order_status = #{orderStatus}
     </if>
+    order by created_time desc
   </select>
   <select id="listItemsByOrderId" resultType="com.imooc.pojo.vo.SubOrderVo" parameterType="String">
     SELECT

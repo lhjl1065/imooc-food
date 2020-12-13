@@ -10,6 +10,7 @@ import com.imooc.mapper.OrdersMapper;
 import com.imooc.mapper.UserAddressMapper;
 import com.imooc.mapper.UsersMapper;
 import com.imooc.pojo.OrderStatus;
+import com.imooc.pojo.Orders;
 import com.imooc.pojo.bo.MerchantOrdersBO;
 import com.imooc.pojo.bo.OrderBo;
 import javax.servlet.http.HttpServletRequest;
@@ -46,4 +47,8 @@ public interface OrderService {
     boolean deliver(String orderId);
 
     boolean confirmReceive(String orderId);
+
+    Orders getOrder(String orderId);
+
+    void delete(String orderId);
 }

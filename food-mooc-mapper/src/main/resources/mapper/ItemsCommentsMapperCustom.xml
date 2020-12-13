@@ -8,6 +8,14 @@
     <result column="specName" property="specName"></result>
     <result column="createdTime" property="createdTime"></result>
   </resultMap>
+
+  <resultMap id="MyCommentVO" type="com.imooc.pojo.vo.MyCommentVO">
+  <result column="item_name" property="itemName"></result>
+  <result column="sepc_name" property="specName"></result>
+  <result column="content" property="content"></result>
+  <result column="created_time" property="createdTime"></result>
+  <result column="url" property="itemImg"></result>
+</resultMap>
   <select id="getItemCommentVoList" resultMap="commentVo">
     SELECT
       u.`face` AS userFace,
@@ -28,6 +36,50 @@
       AND
       ic.`comment_level`=#{map.commentLevel}
     </if>
+  </select>
+
+
+  <insert id="saveItemCommentList" parameterType="Map">
+    INSERT INTO items_comments
+    (
+      id,
+      user_id,
+      item_id,
+      item_name,
+      item_spec_id,
+      sepc_name,
+      comment_level,
+      content,
+      created_time,
+      updated_time
+    )
+    VALUES
+    <foreach collection="commentList" separator="," item="item">
+    (
+    #{item.id},
+    #{userId},
+    #{item.itemId},
+    #{item.itemName},
+    #{item.itemSpecId},
+    #{item.itemSpecName},
+    #{item.commentLevel},
+    #{item.content},
+    NOW(),
+    NOW()
+    )
+    </foreach>
+
+  </insert>
+
+  <select id="pageMyComments" parameterType="String" resultMap="MyCommentVO">
+      SELECT
+        ic.item_name,ic.sepc_name,ic.content,ic.created_time,ii.`url` as url
+      FROM
+        items_comments ic LEFT JOIN items_img ii ON ic.`item_id`= ii.`item_id`
+      WHERE
+        ii.`is_main` = 1 AND ic.`user_id`= #{userId}
+      ORDER BY
+        ic.`created_time` DESC
   </select>
 
 

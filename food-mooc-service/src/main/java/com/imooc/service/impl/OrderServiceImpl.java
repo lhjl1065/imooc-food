@@ -40,6 +40,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
 import tk.mybatis.mapper.entity.Example;
 import tk.mybatis.mapper.entity.Example.Criteria;
@@ -58,9 +59,6 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private ItemsMapper itemsMapper;
-
-    @Autowired
-    private ItemsImgMapper itemsImgMapper;
 
     @Autowired
     private OrderItemsMapper orderItemsMapper;
@@ -222,7 +220,7 @@ public class OrderServiceImpl implements OrderService {
         queryOrder.setId(orderId);
         queryOrder.setUserId(userId);
         List<Orders> list = ordersMapper.select(queryOrder);
-        if (list.isEmpty()){
+        if (CollectionUtils.isEmpty(list)){
             return false;
         }
         return true;
@@ -253,5 +251,28 @@ public class OrderServiceImpl implements OrderService {
             .andEqualTo("orderStatus",OrderStatusEnum.WAIT_RECEIVE.type);
         int i = orderStatusMapper.updateByExampleSelective(updateOrderStatus, example);
         return i > 0;
+    }
+
+    /**
+     * 获取某项订单信息
+     * @param orderId
+     * @return
+     */
+    @Override
+    public Orders getOrder(String orderId) {
+        return ordersMapper.selectByPrimaryKey(orderId);
+    }
+
+    /**
+     * 逻辑删除订单
+     * @param orderId
+     */
+    @Override
+    public void delete(String orderId) {
+        Orders orders = new Orders();
+        orders.setId(orderId);
+        orders.setUpdatedTime(new Date());
+        orders.setIsDelete(YesOrNo.YES.getType());
+        ordersMapper.updateByPrimaryKeySelective(orders);
     }
 }
