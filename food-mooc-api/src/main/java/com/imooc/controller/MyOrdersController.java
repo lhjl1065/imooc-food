@@ -4,6 +4,7 @@ import com.imooc.common.enums.OrderStatusEnum;
 import com.imooc.common.utils.IMOOCJSONResult;
 import com.imooc.pojo.OrderStatus;
 import com.imooc.pojo.PagedGridResult;
+import com.imooc.pojo.vo.OrderStatusCounts;
 import com.imooc.pojo.vo.UserInfoVo;
 import com.imooc.service.OrderService;
 import com.imooc.service.UserCenterService;
@@ -80,6 +81,33 @@ public class MyOrdersController {
         orderService.delete(orderId);
         return IMOOCJSONResult.ok();
 
+    }
+    @ApiOperation(value = "统计订单状态的接口",notes = "统计订单状态的接口",httpMethod = "POST")
+    @PostMapping("/statusCounts")
+    public IMOOCJSONResult statusCounts(@RequestParam String userId) {
+        OrderStatusCounts orderStatusCounts = orderService.statusCounts(userId);
+        return IMOOCJSONResult.ok(orderStatusCounts);
+
+    }
+
+    @ApiOperation(value = "分页查询订单动向的接口",notes = "分页查询订单动向的接口",httpMethod = "POST")
+    @PostMapping("/trend")
+    public IMOOCJSONResult trend(
+        @RequestParam String userId,
+        @RequestParam Integer page,
+        @RequestParam Integer pageSize) {
+        if (StringUtils.isBlank(userId)){
+            return IMOOCJSONResult.errorMsg("用户id为空");
+        }
+        if (page==null){
+            page = 1;
+        }
+        if (pageSize == null){
+            pageSize = 10;
+        }
+        // 分页查询订单状态信息
+        PagedGridResult pagedGridResult = orderService.pageOrderTrend(userId,page,pageSize);
+        return IMOOCJSONResult.ok(pagedGridResult);
     }
 
 

@@ -20,6 +20,20 @@
       <result column="price" property="price"/>
     </collection>
   </resultMap>
+
+  <resultMap id="OrderStatusMap" type="com.imooc.pojo.OrderStatus" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="orderId" jdbcType="VARCHAR" />
+    <result column="order_status" property="orderStatus" jdbcType="INTEGER" />
+    <result column="created_time" property="createdTime" jdbcType="TIMESTAMP" />
+    <result column="pay_time" property="payTime" jdbcType="TIMESTAMP" />
+    <result column="deliver_time" property="deliverTime" jdbcType="TIMESTAMP" />
+    <result column="success_time" property="successTime" jdbcType="TIMESTAMP" />
+    <result column="close_time" property="closeTime" jdbcType="TIMESTAMP" />
+    <result column="comment_time" property="commentTime" jdbcType="TIMESTAMP" />
+  </resultMap>
   <select id="listMyOrders" resultMap="BaseResultMap">
     SELECT
     o.id AS orderId,
@@ -47,5 +61,41 @@
     oi.price AS price
     FROM order_items oi
     WHERE oi.`order_id` = #{orderId}
+  </select>
+
+  <select id="countStatus" resultType="int">
+    select
+      count(1)
+    FROM
+      orders os
+    join
+      order_status ot
+    on
+      os.id = ot.order_id
+    WHERE
+      os.user_id = #{userId}
+    AND
+      ot.order_status = #{status}
+    AND
+      os.is_comment = #{isComment}
+  </select>
+
+  <select id="pageOrderTrend" resultMap="OrderStatusMap">
+    select
+        os.id,ot.order_status,ot.pay_time,ot.deliver_time,ot.success_time,ot.close_time, ot.comment_time
+    from
+        orders os
+    join
+        order_status ot
+    on
+        os.id = ot.order_id
+    where
+        os.user_id = #{userId}
+    and
+        os.is_delete = 0
+    and
+        ot.order_status in (20,30,40)
+    ORDER BY
+        os.id desc
   </select>
 </mapper>

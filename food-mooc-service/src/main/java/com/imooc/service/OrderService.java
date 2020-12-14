@@ -11,8 +11,10 @@ import com.imooc.mapper.UserAddressMapper;
 import com.imooc.mapper.UsersMapper;
 import com.imooc.pojo.OrderStatus;
 import com.imooc.pojo.Orders;
+import com.imooc.pojo.PagedGridResult;
 import com.imooc.pojo.bo.MerchantOrdersBO;
 import com.imooc.pojo.bo.OrderBo;
+import com.imooc.pojo.vo.OrderStatusCounts;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -51,4 +53,20 @@ public interface OrderService {
     Orders getOrder(String orderId);
 
     void delete(String orderId);
+
+    /**
+     * 统计用户的订单信息
+     * @param userId
+     * @return
+     */
+    OrderStatusCounts statusCounts(String userId);
+
+    /**
+     * 分页查询订单动向信息
+     * @param userId
+     * @param page
+     * @param pageSize
+     * @return
+     */
+    PagedGridResult pageOrderTrend(String userId, Integer page, Integer pageSize);
 }

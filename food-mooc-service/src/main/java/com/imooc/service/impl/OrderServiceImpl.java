@@ -1,5 +1,7 @@
 package com.imooc.service.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.imooc.common.enums.OrderStatusEnum;
 import com.imooc.common.enums.PayMethod;
 import com.imooc.common.enums.YesOrNo;
@@ -13,6 +15,7 @@ import com.imooc.mapper.ItemsSpecMapper;
 import com.imooc.mapper.OrderItemsMapper;
 import com.imooc.mapper.OrderStatusMapper;
 import com.imooc.mapper.OrdersMapper;
+import com.imooc.mapper.OrdersMapperCustom;
 import com.imooc.mapper.UserAddressMapper;
 import com.imooc.mapper.UsersMapper;
 import com.imooc.pojo.Items;
@@ -21,10 +24,12 @@ import com.imooc.pojo.ItemsSpec;
 import com.imooc.pojo.OrderItems;
 import com.imooc.pojo.OrderStatus;
 import com.imooc.pojo.Orders;
+import com.imooc.pojo.PagedGridResult;
 import com.imooc.pojo.UserAddress;
 import com.imooc.pojo.Users;
 import com.imooc.pojo.bo.MerchantOrdersBO;
 import com.imooc.pojo.bo.OrderBo;
+import com.imooc.pojo.vo.OrderStatusCounts;
 import com.imooc.service.OrderService;
 import java.util.Date;
 import java.util.List;
@@ -74,6 +79,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private RestTemplate restTemplate;
+
+    @Autowired
+    private OrdersMapperCustom ordersMapperCustom;
 
     @Autowired
     private Sid sid;
@@ -274,5 +282,40 @@ public class OrderServiceImpl implements OrderService {
         orders.setUpdatedTime(new Date());
         orders.setIsDelete(YesOrNo.YES.getType());
         ordersMapper.updateByPrimaryKeySelective(orders);
+    }
+
+    /**
+     * 统计用户的订单信息
+     * @param userId
+     * @return
+     */
+    @Override
+    public OrderStatusCounts statusCounts(String userId) {
+        OrderStatusCounts orderStatusCounts = new OrderStatusCounts();
+        orderStatusCounts.setWaitPayCounts(ordersMapperCustom.countStatus(userId,OrderStatusEnum.WAIT_PAY.type,YesOrNo.NO.getType()));
+        orderStatusCounts.setWaitDeliverCounts(ordersMapperCustom.countStatus(userId,OrderStatusEnum.WAIT_DELIVER.type,YesOrNo.NO.getType()));
+        orderStatusCounts.setWaitReceiveCounts(ordersMapperCustom.countStatus(userId,OrderStatusEnum.WAIT_RECEIVE.type,YesOrNo.NO.getType()));
+        orderStatusCounts.setWaitCommentCounts(ordersMapperCustom.countStatus(userId,OrderStatusEnum.SUCCESS.type,YesOrNo.NO.getType()));
+        return orderStatusCounts;
+    }
+
+    @Override
+    public PagedGridResult pageOrderTrend(String userId, Integer page, Integer pageSize) {
+        // 开始分页
+        PageHelper.startPage(page,pageSize);
+        // 查询
+        List<OrderStatus> list = ordersMapperCustom.pageOrderTrend(userId);
+        // 组装分页对象
+        return setterPagedGridResult(list,page);
+    }
+
+    PagedGridResult setterPagedGridResult(List<?> list,Integer page){
+        PageInfo pageList = new PageInfo(list);
+        PagedGridResult pagedGridResult = new PagedGridResult();
+        pagedGridResult.setPage(page);
+        pagedGridResult.setRows(list);
+        pagedGridResult.setTotal(pageList.getPages());
+        pagedGridResult.setRecords(pageList.getTotal());
+        return pagedGridResult;
     }
 }
