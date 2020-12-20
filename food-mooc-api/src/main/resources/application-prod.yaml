@@ -1,0 +1,13 @@
+spring:
+  # 数据库配置
+  datasource:
+    url: jdbc:mysql://49.235.197.123:3306/immoc?useUnicode=true&characterEncoding=UTF-8&autoReconnect
+    username: root
+    password: helloworldx186TM~
+file-path:
+  # 相片存储位置
+  img-user-face-location: /usr/local/face
+url-config:
+  # 访问静态资源的映射地址
+  file-url-path-header: http://foodie-provider.lhjltravle.cn:8088/imooc-foodie
+  notify-url: foodie-provider.linghu.org

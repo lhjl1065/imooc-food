@@ -24,7 +24,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         String faceLocation = fileProperties.getImgUserFaceLocation();
         registry.addResourceHandler("/**")
-            .addResourceLocations("file:"+faceLocation+"\\")
+            .addResourceLocations("file:"+faceLocation+ "/")
             .addResourceLocations("classpath:/META-INF/resources/");
         HashMap<StringBuilder, String> stringBuilderStringHashMap = new HashMap<>();
     }

@@ -83,6 +83,7 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private OrdersMapperCustom ordersMapperCustom;
 
+
     @Autowired
     private Sid sid;
 
@@ -168,7 +169,7 @@ public class OrderServiceImpl implements OrderService {
 //        merchantOrdersBO.setAmount(ordersMapper.selectByPrimaryKey(orderId).getRealPayAmount());真实价格
         //方便测试所有价格改为一分钱
         merchantOrdersBO.setAmount(1);
-        merchantOrdersBO.setReturnUrl("http://kgb4db.natappfree.cc/orders/notifyMerchantOrderPaid");
+        merchantOrdersBO.setReturnUrl("http://foodie-provider.lhjltravle.cn:8088/imooc-foodie/orders/notifyMerchantOrderPaid");
         //发送http请求给聚合支付中心
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);

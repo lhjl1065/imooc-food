@@ -5,13 +5,10 @@ server:
   max-http-header-size: 80KB
 spring:
   profiles:
-    active: dev
+    active: prod
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/imooc-foodie?useUnicode=true&characterEncoding=UTF-8&autoReconnect
-    username: root
-    password: 123456
     hikari:
       connection-timeout: 30000  # 向连接池获取连接超过30秒就放弃
       minimum-idle: 5            # 最小连接数 注:作者推荐最小连接数和最大连接数都设置为10.
@@ -21,11 +18,13 @@ spring:
       pool-name: DataSourceHikariCP   # 数据源名字
       connection-test-query: SELECT 1 # 连接成功的检查语句
       auto-commit: true
+  servlet:
+    multipart:
+      max-file-size: 200KB
+      max-request-size: 500KB
 mybatis:
   type-aliases-package: com.lhjl.pojo  # 指定pojo类所在包路径
   mapper-locations: classpath:mapper/*.xml # 指定mapper映射文件
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   mappers: com.imooc.my.mapper.MyMapper
   not-empty: false
   identity: MYSQL

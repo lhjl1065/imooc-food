@@ -7,6 +7,7 @@ import com.imooc.common.utils.DateUtil;
 import com.imooc.common.utils.IMOOCJSONResult;
 import com.imooc.common.utils.JsonUtils;
 import com.imooc.config.FileProperties;
+import com.imooc.config.UrlProperties;
 import com.imooc.pojo.Users;
 import com.imooc.pojo.bo.UserInfoBo;
 import com.imooc.pojo.vo.UserInfoVo;
@@ -55,6 +56,8 @@ public class UserInfoController {
     private UserCenterService userCenterService;
     @Autowired
     private FileProperties fileProperties;
+    @Autowired
+    private UrlProperties urlProperties;
 
     @PostMapping("/uploadFace")
     @ApiOperation(value = "上传用户头像的接口",notes = "上传用户头像接口",httpMethod = "POST")
@@ -73,7 +76,7 @@ public class UserInfoController {
             if (!"jpeg".equalsIgnoreCase(suffix) &&!"jpg".equalsIgnoreCase(suffix)&&!"png".equalsIgnoreCase(suffix)){
                 return IMOOCJSONResult.errorMsg("图片格式不正确");
             }
-            String fileName=File.separator+"face"+userId+"."+suffix;
+            String fileName="face"+userId+"."+suffix;
             //定义绝对路径
             String filePath=dirPath+fileName;
             //定义用户文件夹
@@ -87,7 +90,7 @@ public class UserInfoController {
                 fileOutputStream = new FileOutputStream(newFile);
                 IOUtils.copy(inputStream, fileOutputStream);
                 // 获取访问改图片映射路径,更新用户表的头像字段,携带时间戳为路径参数,防止浏览器缓存
-                String userFaceUrl = fileProperties.getFileUrlPathHeader()+"/"+userId+"/"+fileName + "?time=" +DateUtil.getCurrentDateString(DateUtil.DATE_PATTERN);
+                String userFaceUrl = urlProperties.getFileUrlPathHeader()+"/"+userId+"/"+fileName + "?time=" +DateUtil.getCurrentDateString(DateUtil.DATE_PATTERN);
                 Users users = userService.updateUserFaceUrl(userFaceUrl, userId);
                 // 更新cookie
                 setNull(users);

@@ -43,7 +43,7 @@ public class PassportController {
         return IMOOCJSONResult.ok();
     }
 
-    @PostMapping("/register")
+    @PostMapping("/regist")
     @ApiOperation(value = "注册账户", notes = "用于注册账号", httpMethod = "POST")
     public Object register(@RequestBody UserBo userBo) {
         //获取前端页面传来的三个值

@@ -16,6 +16,8 @@ public class CorsConfig {
         config.addAllowedOrigin("http://localhost:8080");
         config.addAllowedOrigin("http://qupcag.natappfree.cc");
         config.addAllowedOrigin("http://localhost:8081");
+        config.addAllowedOrigin("http://foodie-shop.lhjltravle.cn:8080");
+        config.addAllowedOrigin("http://foodie-center.lhjltravle.cn:8080");
         //添加允许跨域的Http方法
         config.addAllowedMethod("*");
         //添加允许的头信息

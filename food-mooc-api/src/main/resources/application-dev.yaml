@@ -1,3 +1,18 @@
-bone:
+spring:
+  # 数据库配置
+  datasource:
+    url: jdbc:mysql://localhost:3306/imooc-foodie?useUnicode=true&characterEncoding=UTF-8&autoReconnect
+    username: root
+    password: 123456
+file-path:
+  # 相片存储位置
   img-user-face-location: G:\CodeHome\新建文件夹\trunk\food-mooc-api\src\main\resources
+url-config:
+  # 访问静态资源的映射地址
   file-url-path-header: http://localhost:8088
+  notify-url: foodie-provider.linghu.org
+
+mybatis:
+  # 是否打印日志
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
