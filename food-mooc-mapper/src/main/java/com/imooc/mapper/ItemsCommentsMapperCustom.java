@@ -15,5 +15,6 @@ import org.apache.ibatis.annotations.Param;
 public interface ItemsCommentsMapperCustom {
     List<CommentVo> getItemCommentVoList(@Param("map") HashMap map);
     Integer saveItemCommentList(HashMap map);
+    String a= null;
     List<MyCommentVO> pageMyComments(@Param("userId") String userId);
 }
